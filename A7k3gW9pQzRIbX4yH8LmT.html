@@ -18,11 +18,15 @@
             padding: 10px;
             text-align: left;
         }
-        .delete-btn {
+        .delete-btn, .download-btn {
             color: red;
             cursor: pointer;
         }
-        .back-btn {
+        .download-btn {
+            color: blue;
+            margin-left: 5px;
+        }
+        .back-btn, .upload-btn, .download-all-btn {
             width: 100%;
             padding: 8px;
             color: white;
@@ -31,6 +35,10 @@
             cursor: pointer;
             box-sizing: border-box;
             margin-top: 10px;
+        }
+        .checkbox {
+            width: 20px;
+            height: 20px;
         }
     </style>
 </head>
@@ -41,6 +49,7 @@
 <table id="dataTable">
     <thead>
         <tr>
+            <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
             <th>Nama</th>
             <th>Kelas</th>
             <th>Tanggal</th>
@@ -56,7 +65,9 @@
 </table>
 
 <div class="button-container">
-<button class="back-btn" onclick="goBack()">Kembali</button>
+    <button class="back-btn" onclick="goBack()">Kembali</button>
+    <button class="upload-btn" onclick="uploadData()">Unggah Data</button>
+    <button class="download-all-btn" onclick="downloadAll()">Unduh Semua</button>
 </div>
 
 <script>
@@ -80,17 +91,21 @@
 
         request.onsuccess = function(event) {
             const data = event.target.result;
-            table.innerHTML = ""; 
+            table.innerHTML = "";
             data.forEach(item => {
                 const newRow = table.insertRow();
                 newRow.innerHTML = `
+                    <td><input type="checkbox" class="checkbox" data-id="${item.id}"></td>
                     <td>${item.nama}</td>
                     <td>${item.kelas}</td>
                     <td>${item.tanggal}</td>
                     <td>${item.pelanggaran}</td>
                     <td>${item.keterangan}</td>
                     <td>${item.guru}</td>
-                    <td><button class="delete-btn" onclick="deleteData(${item.id})">Hapus</button></td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteData(${item.id})">Hapus</button>
+                        <button class="download-btn" onclick="downloadData(${item.id})">Unduh</button>
+                    </td>
                 `;
             });
         };
@@ -105,6 +120,68 @@
             alert("Data berhasil dihapus!");
             loadData(); // Muat ulang data setelah menghapus
         };
+    }
+
+    function downloadData(id) {
+        const transaction = db.transaction("pelanggaran");
+        const objectStore = transaction.objectStore("pelanggaran");
+        const request = objectStore.get(id);
+
+        request.onsuccess = function(event) {
+            const data = event.target.result;
+            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `pelanggaran_${data.id}.json`;
+            link.click();
+        };
+    }
+
+    function downloadAll() {
+        const transaction = db.transaction("pelanggaran");
+        const objectStore = transaction.objectStore("pelanggaran");
+        const request = objectStore.getAll();
+
+        request.onsuccess = function(event) {
+            const data = event.target.result;
+            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "semua_pelanggaran.json";
+            link.click();
+        };
+    }
+
+    function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const selectAll = document.getElementById('selectAll').checked;
+        checkboxes.forEach(checkbox => checkbox.checked = selectAll);
+    }
+
+    function uploadData() {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".json";
+        fileInput.onchange = function(event) {
+            const file = event.target.files[0];
+            if (file && file.type === "application/json") {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = JSON.parse(e.target.result);
+                    const transaction = db.transaction(["pelanggaran"], "readwrite");
+                    const objectStore = transaction.objectStore("pelanggaran");
+                    data.forEach(item => {
+                        objectStore.put(item);
+                    });
+                    alert("Data berhasil diunggah!");
+                    loadData();
+                };
+                reader.readAsText(file);
+            } else {
+                alert("Hanya file JSON yang diperbolehkan!");
+            }
+        };
+        fileInput.click();
     }
 
     function goBack() {
