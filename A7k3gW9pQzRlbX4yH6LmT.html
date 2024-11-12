@@ -46,6 +46,9 @@
             width: 20px;
             height: 20px;
         }
+        .button-container {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -102,7 +105,6 @@
             </td>
             <td>
                 <button class="delete-btn" onclick="confirmDelete(event)">Hapus</button>
-                <button class="download-btn" onclick="downloadData(event)">Unduh</button>
             </td>
         </tr>
     </tbody>
@@ -113,9 +115,8 @@
     <button class="save-btn" onclick="saveData()">Simpan</button>
     <button class="pergi" onclick="goToAnotherPage()">Kembali</button>
     <button class="upload-btn" onclick="uploadData()">Unggah Data</button>
-    <button class="download-all-btn" onclick="downloadAll()">Unduh Semua</button>
+    <button class="delete-selected-btn" onclick="deleteSelected()">Hapus yang Ditandai</button>
 </div>
-
 
 <script>
     let db;
@@ -181,7 +182,6 @@
             </td>
             <td>
                 <button class="delete-btn" onclick="confirmDelete(event)">Hapus</button>
-                <button class="download-btn" onclick="downloadData(event)">Unduh</button>
             </td>
         `;
     }
@@ -215,58 +215,6 @@
         if (confirm("Apakah Anda yakin ingin menghapus baris ini?")) {
             const row = event.target.closest("tr");
             row.remove();
-        }
-    }
-
-    function downloadData(event) {
-        const row = event.target.closest("tr");
-        const data = {
-            nama: row.cells[1].children[0].value,
-            kelas: row.cells[2].children[0].value,
-            tanggal: row.cells[3].children[0].value,
-            pelanggaran: row.cells[4].children[0].value,
-            keterangan: row.cells[5].children[0].value,
-            guru: row.cells[6].children[0].value
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${data.nama}_${data.tanggal}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    function downloadAll() {
-        const table = document.getElementById("dataTable").getElementsByTagName("tbody")[0];
-        const rows = table.rows;
-        const dataToDownload = [];
-
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i].cells[0].children[0].checked) {
-                const row = rows[i];
-                const data = {
-                    nama: row.cells[1].children[0].value,
-                    kelas: row.cells[2].children[0].value,
-                    tanggal: row.cells[3].children[0].value,
-                    pelanggaran: row.cells[4].children[0].value,
-                    keterangan: row.cells[5].children[0].value,
-                    guru: row.cells[6].children[0].value
-                };
-                dataToDownload.push(data);
-            }
-        }
-
-        if (dataToDownload.length > 0) {
-            const blob = new Blob([JSON.stringify(dataToDownload, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'data_pelanggaran.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        } else {
-            alert("Pilih data yang ingin diunduh.");
         }
     }
 
@@ -310,8 +258,7 @@
                             <option value="PAK.UBAI">PAK.UBAI</option>
                             <option value="PAK.JUNAEDI">PAK.JUNAEDI</option>
                         </select></td>
-                        <td><button class="delete-btn" onclick="confirmDelete(event)">Hapus</button>
-                            <button class="download-btn" onclick="downloadData(event)">Unduh</button></td>
+                        <td><button class="delete-btn" onclick="confirmDelete(event)">Hapus</button></td>
                     `;
                 });
             };
@@ -326,6 +273,21 @@
         checkboxes.forEach(checkbox => {
             checkbox.checked = selectAllCheckbox.checked;
         });
+    }
+
+    function deleteSelected() {
+        const checkboxes = document.querySelectorAll(".checkbox:checked");
+        if (checkboxes.length === 0) {
+            alert("Tidak ada data yang dipilih.");
+            return;
+        }
+
+        if (confirm("Apakah Anda yakin ingin menghapus data yang ditandai?")) {
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest("tr");
+                row.remove();
+            });
+        }
     }
 
     function goToAnotherPage() {

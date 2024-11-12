@@ -26,7 +26,7 @@
             color: blue;
             margin-left: 5px;
         }
-        .back-btn, .upload-btn, .download-all-btn {
+        .back-btn, .download-all-btn {
             width: 100%;
             padding: 8px;
             color: white;
@@ -39,6 +39,16 @@
         .checkbox {
             width: 20px;
             height: 20px;
+        }
+        .delete-selected-btn {
+            width: 100%;
+            padding: 8px;
+            color: white;
+            background-color: #FF5733;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -66,8 +76,8 @@
 
 <div class="button-container">
     <button class="back-btn" onclick="goBack()">Kembali</button>
-    <button class="upload-btn" onclick="uploadData()">Unggah Data</button>
     <button class="download-all-btn" onclick="downloadAll()">Unduh Semua</button>
+    <button class="delete-selected-btn" onclick="deleteSelected()" id="deleteSelectedBtn" style="display: none;">Hapus yang Ditandai</button>
 </div>
 
 <script>
@@ -95,7 +105,7 @@
             data.forEach(item => {
                 const newRow = table.insertRow();
                 newRow.innerHTML = `
-                    <td><input type="checkbox" class="checkbox" data-id="${item.id}"></td>
+                    <td><input type="checkbox" class="checkbox" data-id="${item.id}" onclick="toggleDeleteButton()"></td>
                     <td>${item.nama}</td>
                     <td>${item.kelas}</td>
                     <td>${item.tanggal}</td>
@@ -156,32 +166,35 @@
         const checkboxes = document.querySelectorAll('.checkbox');
         const selectAll = document.getElementById('selectAll').checked;
         checkboxes.forEach(checkbox => checkbox.checked = selectAll);
+        toggleDeleteButton();
     }
 
-    function uploadData() {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = ".json";
-        fileInput.onchange = function(event) {
-            const file = event.target.files[0];
-            if (file && file.type === "application/json") {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const data = JSON.parse(e.target.result);
-                    const transaction = db.transaction(["pelanggaran"], "readwrite");
-                    const objectStore = transaction.objectStore("pelanggaran");
-                    data.forEach(item => {
-                        objectStore.put(item);
-                    });
-                    alert("Data berhasil diunggah!");
-                    loadData();
+    function toggleDeleteButton() {
+        const selectedCheckboxes = document.querySelectorAll('.checkbox:checked');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        if (selectedCheckboxes.length > 0) {
+            deleteSelectedBtn.style.display = 'block';
+        } else {
+            deleteSelectedBtn.style.display = 'none';
+        }
+    }
+
+    function deleteSelected() {
+        const selectedCheckboxes = document.querySelectorAll('.checkbox:checked');
+        const idsToDelete = Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute('data-id'));
+
+        if (idsToDelete.length > 0) {
+            const transaction = db.transaction(["pelanggaran"], "readwrite");
+            const objectStore = transaction.objectStore("pelanggaran");
+
+            idsToDelete.forEach(id => {
+                const request = objectStore.delete(Number(id));
+                request.onsuccess = function() {
+                    alert("Data yang ditandai berhasil dihapus!");
+                    loadData(); // Muat ulang data setelah menghapus
                 };
-                reader.readAsText(file);
-            } else {
-                alert("Hanya file JSON yang diperbolehkan!");
-            }
-        };
-        fileInput.click();
+            });
+        }
     }
 
     function goBack() {
