@@ -33,7 +33,7 @@ th, td {
 }
 
 th {
-    background-color: #007bff;
+    background: linear-gradient(45deg, #007bff, #0056b3);
     color: #fff;
     font-weight: 500;
     text-transform: uppercase;
@@ -61,83 +61,58 @@ input[type="text"]:focus, input[type="date"]:focus, select:focus {
     outline: none;
 }
 
-/* Mengatur tata letak tombol */
+/* Gaya untuk tombol kontainer */
 .button-container {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
     width: 90%;
     margin: 20px auto;
 }
 
-/* Gaya untuk tombol "Tambah Daftar" di kiri */
-button.add-row-btn {
+/* Gaya umum untuk semua tombol */
+.button-container button {
     flex: 1;
-    background-color: #007bff;
-    color: #fff;
     padding: 14px;
-    margin-right: 12px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-button.add-row-btn:hover {
-    background-color: #0056b3;
-}
-
-/* Gaya untuk tombol "Simpan" di tengah */
-button.save-btn {
-    flex: 1;
-    background-color: #28a745;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
     color: #fff;
-    padding: 14px;
-    margin: 0 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
 }
 
-button.save-btn:hover {
-    background-color: #218838;
+/* Gaya untuk tombol dengan gradasi modern */
+.add-row-btn {
+    background: linear-gradient(45deg, #007bff, #0056b3);
 }
 
-/* Gaya untuk tombol "Kembali" di kanan */
-button.pergi {
-    flex: 1;
-    background-color: #dc3545;
-    color: #fff;
-    padding: 14px;
-    margin-left: 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+.save-btn {
+    background: linear-gradient(45deg, #28a745, #218838);
 }
 
-button.pergi:hover {
-    background-color: #c82333;
+.pergi {
+    background: linear-gradient(45deg, #dc3545, #c82333);
 }
 
-button.back-btn {
-    flex: 1;
-    background-color: #28a745;
-    color: #fff;
-    padding: 14px;
-    margin: 0 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+.download-all-btn, .upload-btn {
+    background: linear-gradient(45deg, #20c997, #198754);
 }
 
-button.back-btn:hover {
-    background-color: #218838;
+.back-btn {
+    background: linear-gradient(45deg, #ffc107, #d39e00);
+}
+
+/* Efek hover dan klik */
+.button-container button:hover {
+    background-size: 200%;
+    transform: translateY(-2px);
+}
+
+.button-container button:active {
+    transform: translateY(0);
 }
 
 /* Gaya tombol hapus */
@@ -169,22 +144,4 @@ button.delete-btn:hover {
 .checkbox {
     width: 20px;
     height: 20px;
-}
-
-.back-btn, .upload-btn, .download-all-btn {
-    width: 100%;
-    padding: 12px;
-    color: white;
-    background-color: #4CAF50;
-    border: none;
-    cursor: pointer;
-    box-sizing: border-box;
-    margin-top: 12px;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-.back-btn:hover, .upload-btn:hover, .download-all-btn:hover {
-    background-color: #45a049;
 }
