@@ -145,3 +145,73 @@ button.delete-btn:hover {
     width: 20px;
     height: 20px;
 }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .add-row-btn {
+            margin-top: 10px;
+        }
+        .delete-btn, .download-btn {
+            color: red;
+            cursor: pointer;
+        }
+        .download-btn {
+            color: blue;
+            margin-left: 5px;
+        }
+        .pergi {
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            background-color: #ff0000;
+        }
+        .checkbox {
+            width: 20px;
+            height: 20px;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        .delete-selected-btn {
+            width: 100%;
+            padding: 8px;
+            color: white;
+            background-color: #FF5733;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        .popup-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+        .popup-notification.error {
+            background-color: #f44336;
+        }
